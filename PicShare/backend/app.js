@@ -8,7 +8,19 @@ const app = express();
 
 app.use(
   cors({
-    origin: env.CLIENT_URL,
+    origin: (origin, callback) => {
+      if (!origin) return callback(null, true);
+      const configured = Array.isArray(env.CLIENT_URL) ? env.CLIENT_URL : [env.CLIENT_URL];
+      const isAllowed =
+        configured.includes(origin) ||
+        /^https:\/\/picshare-client.*\.onrender\.com$/.test(origin) ||
+        /^http:\/\/localhost:[0-9]+$/.test(origin);
+
+      if (isAllowed) {
+        return callback(null, true);
+      }
+      return callback(new Error(`Origin ${origin} not allowed by CORS`));
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
