@@ -1,0 +1,83 @@
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(41, 37, 31, 0.48);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 950;
+}
+
+.modal-card {
+  width: 100%;
+  max-width: 440px;
+  padding: 24px;
+  background-color: var(--bg-surface);
+  box-shadow: var(--shadow-md);
+  border-radius: var(--radius-lg);
+}
+
+.modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.modal-title {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--text-primary);
+}
+
+.modal-title-danger {
+  color: var(--danger);
+}
+
+.modal-close-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.modal-close-btn:hover:not(:disabled) {
+  background-color: var(--bg-subtle);
+  color: var(--text-primary);
+}
+
+.modal-copy {
+  margin: 8px 0 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+.modal-alert {
+  margin-top: 14px;
+}
+
+.modal-projected-body:empty {
+  display: none;
+}
+
+.modal-projected-body {
+  margin-top: 16px;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 22px;
+}

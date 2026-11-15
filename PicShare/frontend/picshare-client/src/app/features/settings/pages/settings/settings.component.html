@@ -1,0 +1,226 @@
+<div class="ps-page-container settings-container">
+  <header class="ps-page-header">
+    <div>
+      <h1 class="ps-page-title">Settings</h1>
+      <p class="ps-page-subtitle">Manage your profile, account privacy, security, and session.</p>
+    </div>
+  </header>
+
+  <div class="settings-stack">
+    <!-- Edit Profile Shortcut -->
+    <section class="settings-section ps-card">
+      <div class="section-row">
+        <div>
+          <h2 class="section-title">Profile Details</h2>
+          <p class="section-desc">Update your profile photograph, display name, and bio.</p>
+        </div>
+        <a routerLink="/profile/edit" class="ps-btn ps-btn-secondary ps-btn-sm">Edit Profile</a>
+      </div>
+    </section>
+
+    <!-- Account Privacy -->
+    <section class="settings-section ps-card">
+      <div class="section-row">
+        <div>
+          <h2 class="section-title">Account Privacy</h2>
+          <p class="section-desc">
+            When your account is private, only approved followers can view your photographs.
+          </p>
+        </div>
+        <span class="privacy-status-text" [class.is-private]="isPrivate">
+          {{ isPrivate ? 'Private' : 'Public' }}
+        </span>
+      </div>
+
+      <label class="privacy-switch">
+        <input
+          type="checkbox"
+          [checked]="isPrivate"
+          [disabled]="isUpdatingPrivacy"
+          (change)="onPrivacyToggle($event)"
+        />
+        <span>{{ isUpdatingPrivacy ? 'Saving privacy setting...' : 'Private account' }}</span>
+      </label>
+
+      <div *ngIf="privacyError" class="ps-alert ps-alert-error settings-alert" role="alert">
+        {{ privacyError }}
+      </div>
+    </section>
+
+    <!-- Change Password -->
+    <section class="settings-section ps-card">
+      <h2 class="section-title">Change Password</h2>
+      <p class="section-desc">Choose a strong password of at least 6 characters.</p>
+
+      <div *ngIf="passwordError" class="ps-alert ps-alert-error settings-alert" role="alert">
+        {{ passwordError }}
+      </div>
+      <div *ngIf="passwordSuccess" class="ps-alert ps-alert-success settings-alert" role="status">
+        {{ passwordSuccess }}
+      </div>
+
+      <form [formGroup]="passwordForm" (ngSubmit)="onChangePassword()" class="password-form" novalidate>
+        <div>
+          <label for="current-password" class="ps-field-label">Current Password</label>
+          <input
+            id="current-password"
+            type="password"
+            formControlName="currentPassword"
+            class="ps-input"
+            autocomplete="current-password"
+          />
+          <p
+            *ngIf="
+              passwordForm.get('currentPassword')?.touched &&
+              passwordForm.get('currentPassword')?.hasError('required')
+            "
+            class="ps-field-error"
+          >
+            Current password is required.
+          </p>
+        </div>
+
+        <div class="password-grid">
+          <div>
+            <label for="new-password" class="ps-field-label">New Password</label>
+            <input
+              id="new-password"
+              type="password"
+              formControlName="newPassword"
+              class="ps-input"
+              autocomplete="new-password"
+            />
+            <p
+              *ngIf="
+                passwordForm.get('newPassword')?.touched &&
+                passwordForm.get('newPassword')?.hasError('required')
+              "
+              class="ps-field-error"
+            >
+              New password is required.
+            </p>
+            <p
+              *ngIf="
+                passwordForm.get('newPassword')?.touched &&
+                passwordForm.get('newPassword')?.hasError('minlength')
+              "
+              class="ps-field-error"
+            >
+              New password must be at least 6 characters.
+            </p>
+          </div>
+
+          <div>
+            <label for="confirm-new-password" class="ps-field-label">Confirm New Password</label>
+            <input
+              id="confirm-new-password"
+              type="password"
+              formControlName="confirmNewPassword"
+              class="ps-input"
+              autocomplete="new-password"
+            />
+            <p
+              *ngIf="
+                passwordForm.get('confirmNewPassword')?.touched &&
+                passwordForm.get('confirmNewPassword')?.hasError('required')
+              "
+              class="ps-field-error"
+            >
+              Please confirm your new password.
+            </p>
+            <p
+              *ngIf="
+                passwordForm.get('confirmNewPassword')?.touched &&
+                passwordForm.hasError('passwordMismatch')
+              "
+              class="ps-field-error"
+            >
+              New passwords do not match.
+            </p>
+          </div>
+        </div>
+
+        <div class="password-actions">
+          <button
+            type="submit"
+            class="ps-btn ps-btn-primary"
+            [disabled]="isUpdatingPassword"
+          >
+            {{ isUpdatingPassword ? 'Updating...' : 'Update Password' }}
+          </button>
+        </div>
+      </form>
+    </section>
+
+    <!-- Session -->
+    <section class="settings-section ps-card">
+      <div class="section-row">
+        <div>
+          <h2 class="section-title">Session</h2>
+          <p class="section-desc">Sign out of PicShare on this browser.</p>
+        </div>
+        <button type="button" class="ps-btn ps-btn-secondary ps-btn-sm" (click)="onLogout()">
+          Log out
+        </button>
+      </div>
+    </section>
+
+    <!-- Delete Account -->
+    <section class="settings-section settings-danger-section ps-card">
+      <div class="section-row">
+        <div>
+          <h2 class="section-title danger-title">Delete Account</h2>
+          <p class="section-desc">
+            Permanently delete your account, photographs, comments, likes, and follow connections.
+          </p>
+        </div>
+        <button
+          type="button"
+          class="ps-btn ps-btn-danger ps-btn-sm"
+          (click)="openDeleteModal()"
+        >
+          Delete Account
+        </button>
+      </div>
+    </section>
+  </div>
+</div>
+
+<app-confirm-modal
+  [isOpen]="showDeleteModal"
+  title="Confirm Account Deletion"
+  description="This action cannot be undone. All of your photographs, comments, and follow connections will be permanently removed."
+  [confirmLabel]="isDeletingAccount ? 'Deleting...' : 'Permanently Delete'"
+  variant="danger"
+  [isBusy]="isDeletingAccount"
+  [errorMessage]="deleteError"
+  (confirmed)="onConfirmDeleteAccount()"
+  (cancelled)="closeDeleteModal()"
+>
+  <div class="modal-fields">
+    <div>
+      <label for="delete-confirm-username" class="ps-field-label">
+        Type <strong>{{ user?.username }}</strong> to confirm
+      </label>
+      <input
+        id="delete-confirm-username"
+        type="text"
+        [(ngModel)]="deleteConfirmUsername"
+        class="ps-input"
+        [placeholder]="user?.username || 'Username'"
+      />
+    </div>
+
+    <div>
+      <label for="delete-confirm-password" class="ps-field-label">Current Password</label>
+      <input
+        id="delete-confirm-password"
+        type="password"
+        [(ngModel)]="deletePassword"
+        class="ps-input"
+        placeholder="Enter your password"
+        autocomplete="current-password"
+      />
+    </div>
+  </div>
+</app-confirm-modal>

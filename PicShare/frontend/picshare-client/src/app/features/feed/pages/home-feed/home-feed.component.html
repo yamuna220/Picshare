@@ -1,0 +1,45 @@
+<div class="ps-page-container feed-container">
+  <div class="feed-column">
+    <header class="ps-page-header">
+      <div>
+        <h1 class="ps-page-title">Home Feed</h1>
+        <p class="ps-page-subtitle">Newest photographs from creators you follow and your own gallery.</p>
+      </div>
+      <div class="feed-header-actions">
+        <a routerLink="/explore" class="ps-btn ps-btn-secondary">Explore</a>
+        <a routerLink="/create" class="ps-btn ps-btn-primary">Create Post</a>
+      </div>
+    </header>
+
+    <app-loading-spinner *ngIf="isLoading" label="Loading your feed..."></app-loading-spinner>
+
+    <div *ngIf="!isLoading && errorMessage" class="ps-alert ps-alert-error" role="alert">
+      {{ errorMessage }}
+    </div>
+
+    <ng-container *ngIf="!isLoading && !errorMessage">
+      <app-post-card
+        *ngFor="let post of posts"
+        [post]="post"
+        [currentUserId]="currentUserId"
+        (toggleLike)="onToggleLike($event)"
+        (addComment)="onAddComment($event)"
+        (deletePost)="onDeletePost($event)"
+      ></app-post-card>
+
+      <app-empty-state
+        *ngIf="posts.length === 0"
+        title="Your feed is quiet"
+        description="Follow creators on Explore or Search, or share your first photograph to bring your feed to life."
+        actionLabel="Explore Photographs"
+        actionRoute="/explore"
+      ></app-empty-state>
+
+      <div *ngIf="hasMore" class="load-more-wrap">
+        <button type="button" class="ps-btn ps-btn-secondary" (click)="page = page + 1; loadFeed()">
+          Load older posts
+        </button>
+      </div>
+    </ng-container>
+  </div>
+</div>

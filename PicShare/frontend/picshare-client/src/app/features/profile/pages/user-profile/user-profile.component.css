@@ -1,0 +1,35 @@
+@import '../my-profile/my-profile.component.css';
+
+.private-gate {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 48px 24px;
+  text-align: center;
+}
+
+.private-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background-color: var(--bg-canvas);
+  border: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent-primary);
+  margin-bottom: 14px;
+}
+
+.private-title {
+  font-family: var(--font-display);
+  font-size: 21px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.private-copy {
+  margin: 0;
+  font-size: 14px;
+  color: var(--text-secondary);
+}

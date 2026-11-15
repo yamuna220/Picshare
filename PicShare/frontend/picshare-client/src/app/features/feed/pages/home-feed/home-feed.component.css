@@ -1,0 +1,19 @@
+.feed-container {
+  max-width: 680px;
+}
+
+.feed-column {
+  width: 100%;
+}
+
+.feed-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.load-more-wrap {
+  display: flex;
+  justify-content: center;
+  margin-top: 16px;
+}

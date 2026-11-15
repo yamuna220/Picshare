@@ -1,0 +1,62 @@
+<div
+  *ngIf="isOpen"
+  class="modal-backdrop"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="ps-confirm-modal-title"
+  (click)="onBackdropClick($event)"
+>
+  <div class="modal-card ps-card">
+    <header class="modal-header">
+      <h2
+        id="ps-confirm-modal-title"
+        class="modal-title"
+        [class.modal-title-danger]="variant === 'danger'"
+      >
+        {{ title }}
+      </h2>
+      <button
+        type="button"
+        class="modal-close-btn"
+        aria-label="Close modal"
+        [disabled]="isBusy"
+        (click)="onCancel()"
+      >
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </header>
+
+    <p *ngIf="description" class="modal-copy">{{ description }}</p>
+
+    <div *ngIf="errorMessage" class="ps-alert ps-alert-error modal-alert" role="alert">
+      {{ errorMessage }}
+    </div>
+
+    <div class="modal-projected-body">
+      <ng-content></ng-content>
+    </div>
+
+    <footer class="modal-actions">
+      <button
+        type="button"
+        class="ps-btn ps-btn-secondary"
+        [disabled]="isBusy"
+        (click)="onCancel()"
+      >
+        {{ cancelLabel }}
+      </button>
+      <button
+        type="button"
+        class="ps-btn"
+        [ngClass]="variant === 'danger' ? 'ps-btn-danger-solid' : 'ps-btn-primary'"
+        [disabled]="isBusy"
+        (click)="onConfirm()"
+      >
+        {{ confirmLabel }}
+      </button>
+    </footer>
+  </div>
+</div>

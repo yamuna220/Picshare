@@ -1,0 +1,12 @@
+<div class="avatar-frame" [ngClass]="'avatar-' + size">
+  <img
+    *ngIf="resolvedSrc && !imageFailed"
+    [src]="resolvedSrc"
+    [alt]="username ? username + ' profile picture' : 'User profile picture'"
+    referrerpolicy="no-referrer"
+    (error)="onImageError()"
+  />
+  <span *ngIf="!src || imageFailed" class="avatar-fallback" aria-hidden="true">
+    {{ initials }}
+  </span>
+</div>

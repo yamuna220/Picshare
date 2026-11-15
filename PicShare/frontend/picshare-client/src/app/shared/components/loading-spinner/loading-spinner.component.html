@@ -1,0 +1,4 @@
+<div class="spinner-wrap" role="status" aria-live="polite">
+  <span class="spinner-ring" [ngClass]="'spinner-' + size" aria-hidden="true"></span>
+  <span *ngIf="label" class="spinner-label">{{ label }}</span>
+</div>

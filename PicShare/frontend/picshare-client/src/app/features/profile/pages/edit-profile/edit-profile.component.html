@@ -1,0 +1,81 @@
+<div class="ps-page-container edit-profile-container">
+  <header class="ps-page-header">
+    <div>
+      <h1 class="ps-page-title">Edit Profile</h1>
+      <p class="ps-page-subtitle">Update your photograph, display name, bio, and account privacy.</p>
+    </div>
+    <a routerLink="/profile" class="ps-btn ps-btn-secondary">Back to Profile</a>
+  </header>
+
+  <section class="edit-card ps-card">
+    <div *ngIf="errorMessage" class="ps-alert ps-alert-error edit-alert" role="alert">
+      {{ errorMessage }}
+    </div>
+
+    <div class="avatar-editor-row">
+      <app-user-avatar
+        [src]="avatarPreviewUrl"
+        [username]="currentUsername"
+        size="lg"
+      ></app-user-avatar>
+      <div class="avatar-editor-actions">
+        <span class="editor-username">{{ currentUsername || 'Your profile' }}</span>
+        <label for="avatar-file-input" class="change-photo-link">
+          Change profile photo
+        </label>
+        <input
+          id="avatar-file-input"
+          type="file"
+          accept=".jpg,.jpeg,.png,image/jpeg,image/png"
+          class="ps-sr-only"
+          (change)="onAvatarSelected($event)"
+        />
+      </div>
+    </div>
+
+    <form [formGroup]="editForm" (ngSubmit)="onSubmit()" class="edit-form" novalidate>
+      <div>
+        <label for="edit-display-name" class="ps-field-label">Display Name</label>
+        <input
+          id="edit-display-name"
+          type="text"
+          formControlName="displayName"
+          class="ps-input"
+          placeholder="Your display name"
+          maxlength="50"
+        />
+      </div>
+
+      <div>
+        <label for="edit-bio" class="ps-field-label">Bio</label>
+        <textarea
+          id="edit-bio"
+          formControlName="bio"
+          class="ps-textarea"
+          placeholder="Write a short bio..."
+          maxlength="150"
+        ></textarea>
+        <span class="bio-counter tabular-nums">
+          {{ (editForm.get('bio')?.value || '').length }} / 150
+        </span>
+      </div>
+
+      <label class="privacy-toggle-row">
+        <input type="checkbox" formControlName="isPrivate" />
+        <div>
+          <span class="privacy-label">Private account</span>
+          <span class="privacy-description">
+            Only approved followers can view your photographs.
+          </span>
+        </div>
+      </label>
+
+      <div class="edit-form-actions">
+        <a routerLink="/profile" class="ps-btn ps-btn-secondary">Cancel</a>
+        <button type="submit" class="ps-btn ps-btn-primary" [disabled]="isSubmitting">
+          {{ isSubmitting ? 'Saving...' : 'Save Changes' }}
+        </button>
+      </div>
+    </form>
+  </section>
+</div>

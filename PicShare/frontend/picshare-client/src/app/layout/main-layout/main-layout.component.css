@@ -1,0 +1,23 @@
+.app-shell {
+  min-height: 100vh;
+  background-color: var(--bg-canvas);
+}
+
+.app-main {
+  margin-left: var(--nav-width-desktop);
+  min-height: 100vh;
+}
+
+@media (max-width: 1263px) and (min-width: 768px) {
+  .app-main {
+    margin-left: var(--nav-width-tablet);
+  }
+}
+
+@media (max-width: 767px) {
+  .app-main {
+    margin-left: 0;
+    padding-top: var(--header-height-mobile);
+    padding-bottom: calc(var(--bottom-nav-height-mobile) + 16px);
+  }
+}

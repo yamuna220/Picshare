@@ -1,0 +1,157 @@
+<div class="ps-page-container notifications-container">
+  <header class="ps-page-header">
+    <div>
+      <h1 class="ps-page-title">Notifications</h1>
+      <p class="ps-page-subtitle">
+        Activity on your photographs and follow updates
+        <ng-container *ngIf="(unreadCount$ | async) as unreadCount">
+          &middot; <span class="unread-summary tabular-nums">{{ unreadCount }} unread</span>
+        </ng-container>
+      </p>
+    </div>
+
+    <div class="notif-header-actions">
+      <button
+        *ngIf="(unreadCount$ | async) as unreadCount"
+        type="button"
+        class="ps-btn ps-btn-secondary ps-btn-sm"
+        [disabled]="isMarkingAll || unreadCount === 0"
+        (click)="onMarkAllAsRead()"
+      >
+        {{ isMarkingAll ? 'Marking...' : 'Mark all as read' }}
+      </button>
+    </div>
+  </header>
+
+  <!-- Inline Follow Requests Section -->
+  <section *ngIf="pendingRequests.length > 0" class="inline-requests ps-card">
+    <div class="inline-requests-header">
+      <div>
+        <h2 class="inline-requests-title">Follow Requests</h2>
+        <p class="inline-requests-sub tabular-nums">
+          {{ pendingRequests.length }} pending {{ pendingRequests.length === 1 ? 'request' : 'requests' }}
+        </p>
+      </div>
+      <a routerLink="/requests" class="view-all-link">View all</a>
+    </div>
+
+    <div class="inline-requests-list">
+      <div *ngFor="let req of pendingRequests" class="inline-request-row">
+        <a [routerLink]="['/users', req.requester.username]" class="inline-request-user">
+          <app-user-avatar
+            [src]="req.requester.profilePicture"
+            [username]="req.requester.username"
+            size="md"
+          ></app-user-avatar>
+          <div class="inline-request-meta">
+            <span class="notif-username">{{ req.requester.username }}</span>
+            <span *ngIf="req.requester.displayName" class="inline-request-name">
+              {{ req.requester.displayName }}
+            </span>
+          </div>
+        </a>
+
+        <div class="inline-request-actions">
+          <button
+            type="button"
+            class="ps-btn ps-btn-primary ps-btn-sm"
+            [disabled]="processingRequestIds.has(req.id)"
+            (click)="onAcceptRequest(req.id)"
+          >
+            Accept
+          </button>
+          <button
+            type="button"
+            class="ps-btn ps-btn-secondary ps-btn-sm"
+            [disabled]="processingRequestIds.has(req.id)"
+            (click)="onRejectRequest(req.id)"
+          >
+            Reject
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <app-loading-spinner *ngIf="isLoading" label="Loading notifications..."></app-loading-spinner>
+
+  <div *ngIf="!isLoading && errorMessage" class="ps-alert ps-alert-error" role="alert">
+    {{ errorMessage }}
+  </div>
+
+  <div *ngIf="!isLoading && !errorMessage && notifications.length > 0" class="notif-list ps-card">
+    <div
+      *ngFor="let item of notifications"
+      class="notif-row"
+      [class.notif-unread]="!item.isRead"
+      (click)="onOpenNotification(item)"
+    >
+      <span
+        class="unread-dot"
+        [class.unread-dot-active]="!item.isRead"
+        [attr.aria-label]="item.isRead ? 'Read' : 'Unread notification'"
+      ></span>
+
+      <a
+        [routerLink]="['/users', item.actor.username]"
+        (click)="$event.stopPropagation()"
+        class="notif-actor-link"
+      >
+        <app-user-avatar
+          [src]="item.actor.profilePicture"
+          [username]="item.actor.username"
+          size="md"
+        ></app-user-avatar>
+      </a>
+
+      <div class="notif-content">
+        <p class="notif-text">
+          <a
+            [routerLink]="['/users', item.actor.username]"
+            (click)="$event.stopPropagation()"
+            class="notif-username"
+          >
+            {{ item.actor.username }}
+          </a>
+          <span>{{ describeNotification(item) }}</span>
+        </p>
+        <time class="notif-time" [attr.datetime]="item.createdAt">
+          {{ item.createdAt | relativeTime }}
+        </time>
+      </div>
+
+      <div class="notif-trailing" (click)="$event.stopPropagation()">
+        <a
+          *ngIf="item.postId && item.postThumbnailUrl"
+          [routerLink]="['/posts', item.postId]"
+          (click)="!item.isRead && onMarkAsRead(item)"
+          class="notif-thumb-link"
+          aria-label="View post"
+        >
+          <img
+            *ngIf="item.postThumbnailUrl | authMedia | async as safeThumb"
+            [src]="safeThumb"
+            alt="Post thumbnail"
+            class="notif-thumb"
+          />
+        </a>
+
+        <button
+          *ngIf="!item.isRead"
+          type="button"
+          class="mark-read-btn"
+          [disabled]="markingIds.has(item.id)"
+          (click)="onMarkAsRead(item, $event)"
+        >
+          {{ markingIds.has(item.id) ? '...' : 'Mark as read' }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <app-empty-state
+    *ngIf="!isLoading && !errorMessage && notifications.length === 0 && pendingRequests.length === 0"
+    title="No notifications yet"
+    description="Likes, comments, new followers, and follow request updates will appear here."
+  ></app-empty-state>
+</div>

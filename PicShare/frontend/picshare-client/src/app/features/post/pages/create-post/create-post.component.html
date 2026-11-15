@@ -1,0 +1,130 @@
+<div class="ps-page-container create-container">
+  <header class="ps-page-header">
+    <div>
+      <h1 class="ps-page-title">Create Post</h1>
+      <p class="ps-page-subtitle">Share a photograph with your followers. Supports JPG, JPEG, and PNG up to 5 MB.</p>
+    </div>
+  </header>
+
+  <section class="create-card ps-card">
+    <div *ngIf="errorMessage" class="ps-alert ps-alert-error create-alert" role="alert">
+      {{ errorMessage }}
+    </div>
+
+    <div class="upload-layout">
+      <!-- Interactive Drag & Drop + Preview Surface -->
+      <div
+        class="upload-dropzone"
+        [class.is-dragging]="isDragging"
+        [class.has-preview]="!!previewUrl"
+        (dragover)="onDragOver($event)"
+        (dragleave)="onDragLeave($event)"
+        (drop)="onDrop($event)"
+      >
+        <ng-container *ngIf="previewUrl; else dropzonePrompt">
+          <img
+            [src]="previewUrl"
+            alt="Selected photograph preview"
+            class="preview-image"
+          />
+          <div class="preview-toolbar">
+            <button
+              type="button"
+              class="ps-btn ps-btn-secondary ps-btn-sm"
+              [disabled]="isSubmitting"
+              (click)="triggerFilePicker()"
+            >
+              Replace
+            </button>
+            <button
+              type="button"
+              class="ps-btn ps-btn-danger ps-btn-sm"
+              [disabled]="isSubmitting"
+              (click)="clearSelectedFile()"
+            >
+              Remove
+            </button>
+          </div>
+        </ng-container>
+
+        <ng-template #dropzonePrompt>
+          <button
+            type="button"
+            class="dropzone-trigger"
+            (click)="triggerFilePicker()"
+          >
+            <span class="dropzone-icon" aria-hidden="true">
+              <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="18" height="18" rx="3"></rect>
+                <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                <path d="M21 15l-5-5L5 21"></path>
+              </svg>
+            </span>
+            <span class="placeholder-title">Drag and drop your photograph here</span>
+            <span class="placeholder-hint">or click to browse from your device &middot; JPG, PNG up to 5 MB</span>
+            <span class="ps-btn ps-btn-secondary ps-btn-sm dropzone-cta">Select Image</span>
+          </button>
+        </ng-template>
+
+        <input
+          #fileInput
+          id="post-file-input"
+          type="file"
+          accept=".jpg,.jpeg,.png,image/jpeg,image/png"
+          class="ps-sr-only"
+          (change)="onFileSelected($event)"
+        />
+      </div>
+
+      <!-- Caption & Submit Controls -->
+      <div class="upload-controls">
+        <div *ngIf="selectedFile" class="file-summary">
+          <span class="file-name">{{ selectedFile.name }}</span>
+          <span class="file-size tabular-nums">{{ (selectedFile.size / 1024 / 1024) | number: '1.2-2' }} MB</span>
+        </div>
+
+        <div class="caption-group">
+          <label for="post-caption" class="ps-field-label">Caption</label>
+          <textarea
+            id="post-caption"
+            [(ngModel)]="caption"
+            maxlength="2200"
+            class="ps-textarea caption-textarea"
+            placeholder="Write a story or note about this photograph..."
+            [disabled]="isSubmitting"
+          ></textarea>
+          <div class="caption-meta">
+            <span class="caption-hint">Optional &middot; Visible beneath your photograph</span>
+            <span class="char-counter tabular-nums">{{ caption.length }} / 2200</span>
+          </div>
+        </div>
+
+        <div *ngIf="isSubmitting" class="upload-progress" role="status" aria-live="polite">
+          <div class="upload-progress-bar">
+            <div class="upload-progress-fill"></div>
+          </div>
+          <span>Uploading photograph...</span>
+        </div>
+
+        <div class="create-actions">
+          <button
+            type="button"
+            class="ps-btn ps-btn-secondary"
+            [disabled]="isSubmitting"
+            (click)="onCancel()"
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            class="ps-btn ps-btn-primary"
+            [disabled]="!selectedFile || isSubmitting"
+            (click)="onPublish()"
+          >
+            {{ isSubmitting ? 'Sharing...' : 'Share' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>

@@ -1,0 +1,66 @@
+<div class="ps-page-container social-container">
+  <header class="ps-page-header">
+    <div>
+      <h1 class="ps-page-title">Followers</h1>
+      <p class="ps-page-subtitle">
+        {{ username ? 'People following @' + username : 'People following your account' }}
+      </p>
+    </div>
+    <a [routerLink]="isOwnList ? ['/profile'] : ['/users', username]" class="ps-btn ps-btn-secondary">
+      Back to Profile
+    </a>
+  </header>
+
+  <app-loading-spinner *ngIf="isLoading" label="Loading followers..."></app-loading-spinner>
+
+  <div *ngIf="!isLoading && errorMessage" class="ps-alert ps-alert-error" role="alert">
+    {{ errorMessage }}
+  </div>
+
+  <div *ngIf="!isLoading && !errorMessage && followers.length > 0" class="user-list ps-card">
+    <div *ngFor="let follower of followers" class="user-row">
+      <a
+        [routerLink]="follower.isOwnProfile ? ['/profile'] : ['/users', follower.username]"
+        class="user-identity"
+      >
+        <app-user-avatar
+          [src]="follower.profilePicture"
+          [username]="follower.username"
+          size="md"
+        ></app-user-avatar>
+        <div class="user-meta">
+          <span class="user-username">{{ follower.username }}</span>
+          <span *ngIf="follower.displayName" class="user-name">{{ follower.displayName }}</span>
+        </div>
+      </a>
+
+      <div class="row-actions" *ngIf="!follower.isOwnProfile">
+        <button
+          type="button"
+          class="ps-btn ps-btn-sm"
+          [ngClass]="follower.followStatus === 'none' ? 'ps-btn-primary' : 'ps-btn-secondary'"
+          [disabled]="busyUserIds.has(follower.id)"
+          (click)="onToggleFollow(follower)"
+        >
+          {{ getFollowLabel(follower) }}
+        </button>
+
+        <button
+          *ngIf="isOwnList"
+          type="button"
+          class="ps-btn ps-btn-secondary ps-btn-sm"
+          [disabled]="busyUserIds.has(follower.id)"
+          (click)="onRemoveFollower(follower.id)"
+        >
+          Remove
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <app-empty-state
+    *ngIf="!isLoading && !errorMessage && followers.length === 0"
+    title="No followers yet"
+    description="When accounts follow this profile, they will be listed here."
+  ></app-empty-state>
+</div>

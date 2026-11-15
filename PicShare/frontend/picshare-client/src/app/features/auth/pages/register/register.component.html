@@ -1,0 +1,106 @@
+<div class="auth-viewport">
+  <div class="auth-stack">
+    <section class="auth-card ps-card">
+      <h1 class="auth-brand brand-wordmark">PicShare</h1>
+      <p class="auth-subtitle">Create an account to share photographs and follow friends.</p>
+
+      <div *ngIf="errorMessage" class="ps-alert ps-alert-error" role="alert">
+        {{ errorMessage }}
+      </div>
+
+      <div *ngIf="successMessage" class="ps-alert ps-alert-info" role="status">
+        {{ successMessage }}
+      </div>
+
+      <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="auth-form" novalidate>
+        <div class="form-group">
+          <label for="reg-email" class="ps-field-label">Email</label>
+          <input
+            id="reg-email"
+            type="email"
+            formControlName="email"
+            class="ps-input"
+            placeholder="you@example.com"
+            autocomplete="email"
+          />
+          <p
+            *ngIf="registerForm.get('email')?.touched && registerForm.get('email')?.invalid"
+            class="ps-field-error"
+          >
+            Please enter a valid email address.
+          </p>
+        </div>
+
+        <div class="form-group">
+          <label for="reg-username" class="ps-field-label">Username</label>
+          <input
+            id="reg-username"
+            type="text"
+            formControlName="username"
+            class="ps-input"
+            placeholder="Choose a unique username"
+            autocomplete="username"
+          />
+          <p
+            *ngIf="registerForm.get('username')?.touched && registerForm.get('username')?.invalid"
+            class="ps-field-error"
+          >
+            3–30 characters using letters, numbers, periods, or underscores.
+          </p>
+        </div>
+
+        <div class="form-group">
+          <label for="reg-password" class="ps-field-label">Password</label>
+          <input
+            id="reg-password"
+            type="password"
+            formControlName="password"
+            class="ps-input"
+            placeholder="Minimum 6 characters"
+            autocomplete="new-password"
+          />
+          <p
+            *ngIf="registerForm.get('password')?.touched && registerForm.get('password')?.invalid"
+            class="ps-field-error"
+          >
+            Password must be at least 6 characters.
+          </p>
+        </div>
+
+        <div class="form-group">
+          <label for="reg-confirm" class="ps-field-label">Confirm Password</label>
+          <input
+            id="reg-confirm"
+            type="password"
+            formControlName="confirmPassword"
+            class="ps-input"
+            placeholder="Re-enter your password"
+            autocomplete="new-password"
+          />
+          <p
+            *ngIf="
+              registerForm.get('confirmPassword')?.touched &&
+              registerForm.hasError('passwordMismatch')
+            "
+            class="ps-field-error"
+          >
+            Passwords do not match.
+          </p>
+        </div>
+
+        <button
+          type="submit"
+          class="ps-btn ps-btn-primary auth-submit"
+          [disabled]="isSubmitting"
+        >
+          {{ isSubmitting ? 'Creating account...' : 'Create Account' }}
+        </button>
+      </form>
+    </section>
+
+    <section class="auth-switch ps-card">
+      <span>Already have an account?</span>
+      <a routerLink="/login" class="auth-link">Log in</a>
+    </section>
+  </div>
+</div>

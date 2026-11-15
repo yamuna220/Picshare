@@ -1,0 +1,58 @@
+<div class="ps-page-container social-container">
+  <header class="ps-page-header">
+    <div>
+      <h1 class="ps-page-title">Follow Requests</h1>
+      <p class="ps-page-subtitle">Approve or decline requests for your private account.</p>
+    </div>
+    <a routerLink="/profile" class="ps-btn ps-btn-secondary">Back to Profile</a>
+  </header>
+
+  <app-loading-spinner *ngIf="isLoading" label="Loading follow requests..."></app-loading-spinner>
+
+  <div *ngIf="!isLoading && errorMessage" class="ps-alert ps-alert-error" role="alert">
+    {{ errorMessage }}
+  </div>
+
+  <div *ngIf="!isLoading && !errorMessage && requests.length > 0" class="user-list ps-card">
+    <div *ngFor="let req of requests" class="user-row">
+      <a [routerLink]="['/users', req.requester.username]" class="user-identity">
+        <app-user-avatar
+          [src]="req.requester.profilePicture"
+          [username]="req.requester.username"
+          size="md"
+        ></app-user-avatar>
+        <div class="user-meta">
+          <span class="user-username">{{ req.requester.username }}</span>
+          <span *ngIf="req.requester.displayName" class="user-name">
+            {{ req.requester.displayName }}
+          </span>
+        </div>
+      </a>
+
+      <div class="row-actions">
+        <button
+          type="button"
+          class="ps-btn ps-btn-primary ps-btn-sm"
+          [disabled]="processingIds.has(req.id)"
+          (click)="onAccept(req.id)"
+        >
+          Accept
+        </button>
+        <button
+          type="button"
+          class="ps-btn ps-btn-secondary ps-btn-sm"
+          [disabled]="processingIds.has(req.id)"
+          (click)="onReject(req.id)"
+        >
+          Reject
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <app-empty-state
+    *ngIf="!isLoading && !errorMessage && requests.length === 0"
+    title="No pending follow requests"
+    description="When someone requests to follow your private account, their request will appear here."
+  ></app-empty-state>
+</div>

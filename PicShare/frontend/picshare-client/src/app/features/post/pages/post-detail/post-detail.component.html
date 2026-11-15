@@ -1,0 +1,25 @@
+<div class="ps-page-container post-detail-container">
+  <header class="ps-page-header">
+    <div>
+      <h1 class="ps-page-title">Post</h1>
+      <p class="ps-page-subtitle" *ngIf="post">@{{ post.author.username }}</p>
+    </div>
+    <a routerLink="/" class="ps-btn ps-btn-secondary">Back to Feed</a>
+  </header>
+
+  <app-loading-spinner *ngIf="isLoading" label="Loading photograph..."></app-loading-spinner>
+
+  <div *ngIf="!isLoading && errorMessage" class="ps-alert ps-alert-error" role="alert">
+    {{ errorMessage }}
+  </div>
+
+  <app-post-card
+    *ngIf="!isLoading && !errorMessage && post"
+    [post]="post"
+    [currentUserId]="currentUserId"
+    [defaultShowComments]="true"
+    (toggleLike)="onToggleLike($event)"
+    (addComment)="onAddComment($event)"
+    (deletePost)="onDeletePost($event)"
+  ></app-post-card>
+</div>

@@ -1,0 +1,57 @@
+<div class="ps-page-container social-container">
+  <header class="ps-page-header">
+    <div>
+      <h1 class="ps-page-title">Following</h1>
+      <p class="ps-page-subtitle">
+        {{ username ? 'Accounts @' + username + ' follows' : 'Accounts you follow' }}
+      </p>
+    </div>
+    <a [routerLink]="isOwnList ? ['/profile'] : ['/users', username]" class="ps-btn ps-btn-secondary">
+      Back to Profile
+    </a>
+  </header>
+
+  <app-loading-spinner *ngIf="isLoading" label="Loading following..."></app-loading-spinner>
+
+  <div *ngIf="!isLoading && errorMessage" class="ps-alert ps-alert-error" role="alert">
+    {{ errorMessage }}
+  </div>
+
+  <div *ngIf="!isLoading && !errorMessage && following.length > 0" class="user-list ps-card">
+    <div *ngFor="let account of following" class="user-row">
+      <a
+        [routerLink]="account.isOwnProfile ? ['/profile'] : ['/users', account.username]"
+        class="user-identity"
+      >
+        <app-user-avatar
+          [src]="account.profilePicture"
+          [username]="account.username"
+          size="md"
+        ></app-user-avatar>
+        <div class="user-meta">
+          <span class="user-username">{{ account.username }}</span>
+          <span *ngIf="account.displayName" class="user-name">{{ account.displayName }}</span>
+        </div>
+      </a>
+
+      <button
+        *ngIf="!account.isOwnProfile"
+        type="button"
+        class="ps-btn ps-btn-sm"
+        [ngClass]="account.followStatus === 'none' ? 'ps-btn-primary' : 'ps-btn-secondary'"
+        [disabled]="busyUserIds.has(account.id)"
+        (click)="onToggleFollow(account)"
+      >
+        {{ getFollowLabel(account) }}
+      </button>
+    </div>
+  </div>
+
+  <app-empty-state
+    *ngIf="!isLoading && !errorMessage && following.length === 0"
+    title="Not following anyone yet"
+    description="Search for creators to follow and populate your home feed."
+    actionLabel="Search Users"
+    actionRoute="/search"
+  ></app-empty-state>
+</div>

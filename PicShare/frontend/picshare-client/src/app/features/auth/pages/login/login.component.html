@@ -1,0 +1,67 @@
+<div class="auth-viewport">
+  <div class="auth-stack">
+    <section class="auth-card ps-card">
+      <h1 class="auth-brand brand-wordmark">PicShare</h1>
+      <p class="auth-subtitle">Sign in to see photos from people you follow.</p>
+
+      <div *ngIf="infoMessage" class="ps-alert ps-alert-info" role="status">
+        {{ infoMessage }}
+      </div>
+
+      <div *ngIf="errorMessage" class="ps-alert ps-alert-error" role="alert">
+        {{ errorMessage }}
+      </div>
+
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="auth-form" novalidate>
+        <div class="form-group">
+          <label for="login-username" class="ps-field-label">Username</label>
+          <input
+            id="login-username"
+            type="text"
+            formControlName="username"
+            class="ps-input"
+            placeholder="Enter your username"
+            autocomplete="username"
+          />
+          <p
+            *ngIf="loginForm.get('username')?.touched && loginForm.get('username')?.invalid"
+            class="ps-field-error"
+          >
+            Username is required (at least 3 characters).
+          </p>
+        </div>
+
+        <div class="form-group">
+          <label for="login-password" class="ps-field-label">Password</label>
+          <input
+            id="login-password"
+            type="password"
+            formControlName="password"
+            class="ps-input"
+            placeholder="Enter your password"
+            autocomplete="current-password"
+          />
+          <p
+            *ngIf="loginForm.get('password')?.touched && loginForm.get('password')?.invalid"
+            class="ps-field-error"
+          >
+            Password must be at least 6 characters.
+          </p>
+        </div>
+
+        <button
+          type="submit"
+          class="ps-btn ps-btn-primary auth-submit"
+          [disabled]="isSubmitting"
+        >
+          {{ isSubmitting ? 'Logging in...' : 'Login' }}
+        </button>
+      </form>
+    </section>
+
+    <section class="auth-switch ps-card">
+      <span>Don't have an account?</span>
+      <a routerLink="/register" class="auth-link">Create Account</a>
+    </section>
+  </div>
+</div>

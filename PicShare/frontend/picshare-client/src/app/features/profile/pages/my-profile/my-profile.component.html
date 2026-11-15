@@ -1,0 +1,140 @@
+<div class="ps-page-container">
+  <app-loading-spinner *ngIf="isLoading" label="Loading profile..."></app-loading-spinner>
+
+  <div *ngIf="!isLoading && errorMessage" class="ps-alert ps-alert-error" role="alert">
+    {{ errorMessage }}
+  </div>
+
+  <ng-container *ngIf="!isLoading && user">
+    <section class="profile-header ps-card">
+      <div class="profile-avatar-col">
+        <app-user-avatar
+          [src]="avatarPreviewUrl || user.profilePicture"
+          [username]="user.username"
+          size="xl"
+        ></app-user-avatar>
+
+        <div class="avatar-upload-controls">
+          <label for="profile-pic-input" class="ps-btn ps-btn-secondary ps-btn-sm avatar-pick-btn">
+            Upload Photo
+          </label>
+          <input
+            id="profile-pic-input"
+            type="file"
+            accept=".jpg,.jpeg,.png,image/jpeg,image/png"
+            class="ps-sr-only"
+            (change)="onProfilePictureSelected($event)"
+          />
+
+          <div *ngIf="selectedAvatarFile" class="avatar-confirm-row">
+            <button
+              type="button"
+              class="ps-btn ps-btn-primary ps-btn-sm"
+              [disabled]="isUploadingAvatar"
+              (click)="onUploadProfilePicture()"
+            >
+              {{ isUploadingAvatar ? 'Saving...' : 'Save Photo' }}
+            </button>
+            <button
+              type="button"
+              class="ps-btn ps-btn-secondary ps-btn-sm"
+              [disabled]="isUploadingAvatar"
+              (click)="cancelAvatarSelection()"
+            >
+              Cancel
+            </button>
+          </div>
+
+          <p *ngIf="avatarUploadError" class="ps-field-error" role="alert">
+            {{ avatarUploadError }}
+          </p>
+        </div>
+      </div>
+
+      <div class="profile-info-col">
+        <div class="profile-top-row">
+          <div>
+            <h1 class="profile-username">{{ user.username }}</h1>
+            <p class="profile-privacy-note">
+              {{ user.isPrivate ? 'Private account' : 'Public account' }}
+            </p>
+          </div>
+
+          <div class="profile-actions">
+            <a routerLink="/profile/edit" class="ps-btn ps-btn-secondary ps-btn-sm">Edit Profile</a>
+            <a routerLink="/create" class="ps-btn ps-btn-primary ps-btn-sm">Create Post</a>
+            <a routerLink="/requests" class="ps-btn ps-btn-secondary ps-btn-sm">
+              Follow Requests<ng-container *ngIf="(pendingRequestsCount$ | async) as pendingCount"> ({{ pendingCount }})</ng-container>
+            </a>
+            <a routerLink="/settings" class="ps-btn ps-btn-secondary ps-btn-sm">Settings</a>
+          </div>
+        </div>
+
+        <div class="profile-stats tabular-nums">
+          <div class="stat-item">
+            <strong>{{ user.postsCount }}</strong>
+            <span>{{ user.postsCount === 1 ? 'post' : 'posts' }}</span>
+          </div>
+          <a routerLink="/profile/followers" class="stat-item stat-link">
+            <strong>{{ user.followersCount }}</strong>
+            <span>{{ user.followersCount === 1 ? 'follower' : 'followers' }}</span>
+          </a>
+          <a routerLink="/profile/following" class="stat-item stat-link">
+            <strong>{{ user.followingCount }}</strong>
+            <span>following</span>
+          </a>
+        </div>
+
+        <div *ngIf="user.displayName || user.bio" class="profile-bio-block">
+          <p *ngIf="user.displayName" class="profile-display-name">{{ user.displayName }}</p>
+          <p *ngIf="user.bio" class="profile-bio">{{ user.bio }}</p>
+        </div>
+      </div>
+    </section>
+
+    <div class="profile-divider">
+      <span class="divider-tab">Photographs</span>
+    </div>
+
+    <div *ngIf="posts.length > 0" class="ps-photo-grid">
+      <a
+        *ngFor="let post of posts"
+        [routerLink]="['/posts', post.id]"
+        class="ps-grid-tile"
+        [attr.aria-label]="post.caption ? 'View post: ' + post.caption : 'View post'"
+      >
+        <img
+          *ngIf="post.imageUrl | authMedia | async as safeUrl"
+          [src]="safeUrl"
+          [alt]="post.caption || 'Photograph'"
+          referrerpolicy="no-referrer"
+        />
+
+        <div class="ps-grid-overlay">
+          <div class="ps-grid-metrics tabular-nums">
+            <span class="ps-grid-metric">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.5">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+              </svg>
+              <span>{{ post.likesCount }}</span>
+            </span>
+            <span class="ps-grid-metric">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.5">
+                <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+              </svg>
+              <span>{{ post.commentsCount }}</span>
+            </span>
+          </div>
+        </div>
+      </a>
+    </div>
+
+    <app-empty-state
+      *ngIf="posts.length === 0"
+      title="Share Your Photographs"
+      description="Photographs you publish will appear in your gallery grid."
+      actionLabel="Create your first post"
+      actionRoute="/create"
+    ></app-empty-state>
+  </ng-container>
+</div>

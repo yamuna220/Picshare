@@ -1,0 +1,94 @@
+<div class="ps-page-container search-container">
+  <header class="ps-page-header">
+    <div>
+      <h1 class="ps-page-title">Search</h1>
+      <p class="ps-page-subtitle">Find photographers and creators by username or display name.</p>
+    </div>
+    <a routerLink="/explore" class="ps-btn ps-btn-secondary">Browse Explore</a>
+  </header>
+
+  <form class="search-form" (ngSubmit)="onSearch()">
+    <div class="search-input-wrap">
+      <svg
+        class="search-input-icon"
+        width="18"
+        height="18"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <circle cx="11" cy="11" r="8"></circle>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+      </svg>
+
+      <input
+        type="text"
+        name="searchQuery"
+        [(ngModel)]="query"
+        class="ps-input search-input"
+        placeholder="Search by username..."
+        aria-label="Search users by username"
+      />
+
+      <button
+        *ngIf="query"
+        type="button"
+        class="search-clear-btn"
+        aria-label="Clear search"
+        (click)="clearSearch()"
+      >
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+
+    <button type="submit" class="ps-btn ps-btn-primary" [disabled]="!query.trim() || isLoading">
+      Search
+    </button>
+  </form>
+
+  <app-loading-spinner *ngIf="isLoading" label="Searching creators..."></app-loading-spinner>
+
+  <div *ngIf="!isLoading && errorMessage" class="ps-alert ps-alert-error" role="alert">
+    {{ errorMessage }}
+  </div>
+
+  <div *ngIf="!isLoading && !errorMessage && results.length > 0" class="results-list ps-card">
+    <a
+      *ngFor="let user of results"
+      [routerLink]="['/users', user.username]"
+      class="result-row"
+    >
+      <app-user-avatar
+        [src]="user.profilePicture"
+        [username]="user.username"
+        size="md"
+      ></app-user-avatar>
+      <div class="result-meta">
+        <span class="result-username">{{ user.username }}</span>
+        <span *ngIf="user.displayName" class="result-name">{{ user.displayName }}</span>
+      </div>
+      <span class="result-action">View profile</span>
+    </a>
+  </div>
+
+  <app-empty-state
+    *ngIf="!isLoading && !errorMessage && hasSearched && results.length === 0"
+    title="No matching creators"
+    description="Try a different username or check the spelling."
+  ></app-empty-state>
+
+  <app-empty-state
+    *ngIf="!hasSearched && !isLoading"
+    title="Discover people on PicShare"
+    description="Enter a username above to find profiles, or explore photographs from across the community."
+    actionLabel="Explore Photographs"
+    actionRoute="/explore"
+  ></app-empty-state>
+</div>

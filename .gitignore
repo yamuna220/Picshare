@@ -1,0 +1,21 @@
+node_modules/
+build/
+dist/
+coverage/
+.DS_Store
+*.log
+.env*
+!.env.example
+!PicShare/backend/.env.example
+
+# PicShare media uploads
+PicShare/backend/uploads/posts/*
+PicShare/backend/uploads/profiles/*
+PicShare/backend/uploads/avatars/*
+!PicShare/backend/uploads/**/.gitkeep
+
+# IDE and tool caches
+.vscode/
+.antigravity/
+.aistudio/
+.angular/
