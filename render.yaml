@@ -30,7 +30,6 @@ services:
   - type: web
     name: picshare-client
     runtime: static
-    plan: free
     rootDir: PicShare/frontend/picshare-client
     buildCommand: npm install && npm run build
     staticPublishPath: dist/picshare-client
